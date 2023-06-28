@@ -1,0 +1,27 @@
+[
+    {
+        "name":"root",
+        "files":["a","b","c"],
+        "directories":[
+            [
+                {
+                    "name":"kaki",
+                    "files":["v","s","e"],
+                    "directories":[]
+                }
+            ],
+            [
+                {
+                    "name":"kaki2",
+                    "files":["f","s","q"],
+                    "directories":[]
+                }
+            ]
+        ]
+    },
+    {
+        "name":"root2",
+        "files":["a1","b","c"],
+        "directories":[]
+    }
+]

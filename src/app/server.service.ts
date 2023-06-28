@@ -10,7 +10,7 @@ export class ServerService {
   private serverUrl = 'http://localhost:3000';
   constructor(private http: HttpClient) { }
 
-   getData(): Observable<Directory> {
-    return this.http.get<Directory>(`${this.serverUrl}/files`);
+   getData(): Observable<Directory[]> {
+    return this.http.get<Directory[]>(`${this.serverUrl}/files`);
   }
 }
