@@ -1,1 +1,4 @@
 <p>tree works!</p>
+<div *ngIf="rootDirectory$ | async as rootDirectory">
+    Root Directory: {{ rootDirectory?.name }}
+</div>
