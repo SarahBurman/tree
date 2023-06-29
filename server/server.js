@@ -54,20 +54,16 @@ function getMatchingDirectories(directories, prefix){
   for (const node of directories) {
     const { name, files, directories } = node;
     const matchedFiles = files.filter(file => file.toLowerCase().startsWith(prefix.toLowerCase()));
+    let matchedDirectories = [];
 
-    if (matchedFiles.length > 0) {
-      result.push({ name, files: matchedFiles, directories: [] });
-    }
-    else if (name.toLowerCase().startsWith(prefix.toLowerCase())) {
-        result.push({ name, files: [], directories: [] });
-    } 
-    
     if (directories.length > 0) {
-      const matchedDirectories = getMatchingDirectories(directories, prefix);
-      if (matchedDirectories.length > 0) {
-        result.push({ name, files: [], directories: matchedDirectories });
-      }
+      matchedDirectories = getMatchingDirectories(directories, prefix);
     }
+
+    if(matchedFiles.length > 0 || name.toLowerCase().startsWith(prefix.toLowerCase()) || matchedDirectories.length > 0){
+      result.push({ name, files: matchedFiles, directories: matchedDirectories });
+    }
+
   }
 
   return result;
