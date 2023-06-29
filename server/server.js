@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 app.use(cors());
 
-const treeData = require('./temptree');
+const treeData = require('./tree');
 
 const port = 3000;
 
