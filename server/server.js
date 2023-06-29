@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 app.use(cors());
 
-const treeData = require('./temptree');
+const treeData = require('./tree');
 
 const port = 3000;
 
@@ -13,12 +13,13 @@ let directories = [];
 
 app.get('/files', (req, res) => {
   if(directories) {
-    const query = req.query.q;
-    if (!query) {
+    const prefix = req.query.q;
+    if (!prefix) {
       res.json(directories);
     }
     else {
-      res.json(getMatchingDirectories(directories,query));
+      console.log(`looking for prefix: ${prefix}`)
+      res.json(getMatchingDirectories(directories,prefix));
     }
 
   }
@@ -53,7 +54,7 @@ function getMatchingDirectories(directories, prefix){
   for (const node of directories) {
     const { name, files, directories } = node;
     const matchedFiles = files.filter(file => file.toLowerCase().startsWith(prefix.toLowerCase()));
-    console.log(matchedFiles);
+
     if (matchedFiles.length > 0) {
       result.push({ name, files: matchedFiles, directories: [] });
     }
@@ -68,5 +69,6 @@ function getMatchingDirectories(directories, prefix){
       }
     }
   }
+
   return result;
 }

@@ -32,22 +32,18 @@ export class TreeComponent implements OnInit, OnDestroy {
           else {
             return this.serverService.getDirectories()
           }
-      
         })
       )
-      .subscribe(tree => {
-        const convertedTree = convertToTree(tree);
-        console.log(convertedTree);
-        this.dataSource.data = convertedTree;
-      });
+      .subscribe(tree => 
+        this.dataSource.data = convertToTree(tree)
+      );
   }
 
   ngOnInit() {
     this.serverService.getDirectories()
     .pipe(takeUntil(this.destroy$))
     .subscribe(tree => {
-      const convertedTree = convertToTree(tree);
-        this.dataSource.data = convertedTree;
+      this.dataSource.data = convertToTree(tree)
     });
   }
 
