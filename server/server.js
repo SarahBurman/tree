@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 app.use(cors());
 
-const treeData = require('./tree');
+const treeData = require('./temptree');
 
 const port = 3000;
 
@@ -18,7 +18,7 @@ app.get('/files', (req, res) => {
       res.json(directories);
     }
     else {
-      res.json(getMatchingDirectories(query))
+      res.json(getMatchingDirectories(directories,query));
     }
 
   }
@@ -48,31 +48,25 @@ function convertToDirectory(data) {
 
   return directory
 }
-
-function getMatchingDirectories(prefix) {
-  matchingDirectories = [];
-  directories.forEach(directory => {
-      getMatchingInnerDirectories(directory, prefix, matchingDirectories);
+function getMatchingDirectories(directories, prefix){
+  const result = [];
+  for (const node of directories) {
+    const { name, files, directories } = node;
+    const matchedFiles = files.filter(file => file.toLowerCase().startsWith(prefix.toLowerCase()));
+    console.log(matchedFiles);
+    if (matchedFiles.length > 0) {
+      result.push({ name, files: matchedFiles, directories: [] });
     }
-  );
-  return matchingDirectories;
-}
-
-function getMatchingInnerDirectories(dir, prefix, matchingDirectories) {
-  if (dir.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-    matchingDirectories.push(dir);
+    else if (name.toLowerCase().startsWith(prefix.toLowerCase())) {
+        result.push({ name, files: [], directories: [] });
+    } 
+    
+    if (directories.length > 0) {
+      const matchedDirectories = getMatchingDirectories(directories, prefix);
+      if (matchedDirectories.length > 0) {
+        result.push({ name, files: [], directories: matchedDirectories });
+      }
+    }
   }
-  if(dir.files.some(file => file.toLowerCase().startsWith(prefix.toLowerCase()))){
-    const matchedDir = {
-      name: dir.name,
-      files: dir.files.filter(file=> file.toLowerCase().startsWith(prefix.toLowerCase())),
-      directories: []
-    };
-      matchingDirectories.push(matchedDir);
-  }
-  if (dir.directories && dir.directories.length > 0) {
-    dir.directories.forEach(subDirectory => {
-      getMatchingInnerDirectories(subDirectory, prefix, matchingDirectories);
-    });
-  }
+  return result;
 }
