@@ -1,56 +1,49 @@
 const express = require('express');
-const app = express();
-
 const cors = require('cors');
-app.use(cors());
-
 const treeData = require('./tree');
 
 const port = 3000;
+const app = express();
 
-let directories = [];
+let directories = treeData.map(directory => convertToFlattenDirectory(directory));
 
+app.use(cors());
 
 app.get('/files', (req, res) => {
-  if(directories) {
     const prefix = req.query.q;
+    
     if (!prefix) {
       res.json(directories);
-    }
-    else {
-      console.log(`looking for prefix: ${prefix}`)
-      res.json(getMatchingDirectories(directories,prefix));
+      return;
     }
 
-  }
+    res.json(getMatchingDirectories(directories,prefix));
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  readJSON();
+  console.log(`Server is running on port ${port}`)
 });
 
-function readJSON() {
-  treeData.forEach(directory => directories.push(convertToDirectory(directory)));
-}
 
-function convertToDirectory(data) {
-  const directory = { 
-    name:data.name,
-    files: data.files,
+function convertToFlattenDirectory(directory) {
+  const root = { 
+    name:directory.name,
+    files: directory.files,
     directories: []
   }
  
-  if (data.directories && data.directories.length > 0) {
-    directory.directories = data.directories.flatMap(subDirectories =>
-      subDirectories.map(subDirectory => convertToDirectory(subDirectory))
+  if (directory.directories?.length > 0) {
+    root.directories = directory.directories.flatMap(subDirectories =>
+      subDirectories.map(subDirectory => convertToFlattenDirectory(subDirectory))
     );
   }
 
-  return directory
+  return root;
 }
-function getMatchingDirectories(directories, prefix){
+
+function getMatchingDirectories(directories, prefix) {
   const result = [];
+  
   for (const node of directories) {
     const { name, files, directories } = node;
     const matchedFiles = files.filter(file => file.toLowerCase().startsWith(prefix.toLowerCase()));
@@ -63,7 +56,6 @@ function getMatchingDirectories(directories, prefix){
     if(matchedFiles.length > 0 || name.toLowerCase().startsWith(prefix.toLowerCase()) || matchedDirectories.length > 0){
       result.push({ name, files: matchedFiles, directories: matchedDirectories });
     }
-
   }
 
   return result;

@@ -1,58 +1,47 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, iif, startWith, switchMap, takeUntil } from 'rxjs';
 import { ServerService } from '../server.service';
-import { DirectoryNode, convertToTree } from '../utils';
+import { Directory } from '../types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 @Component({
   selector: 'tree-tree',
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.scss'],
 })
-export class TreeComponent implements OnInit, OnDestroy {
-
-  private destroy$: Subject<void> = new Subject<void>();
-
-  dataSource = new MatTreeNestedDataSource<DirectoryNode>();
-  nestedTree = new NestedTreeControl<DirectoryNode>(node => node.children);
+export class TreeComponent implements OnDestroy {
+  dataSource = new MatTreeNestedDataSource<Directory>();
+  nestedTree = new NestedTreeControl<Directory>(node => node.directories);
 
   searchControl = new FormControl<string>('');
 
+  private destroy$: Subject<void> = new Subject<void>();
+
   constructor(private serverService:ServerService){
     this.searchControl.valueChanges.pipe(
-      takeUntil(this.destroy$),
+      startWith(this.searchControl.value),
       debounceTime(500),
       distinctUntilChanged(),
-      switchMap(
-        (prefix) => {
-          if(prefix){
-            return this.serverService.getDirectoriesByPrefix(prefix)
-          }
-          else {
-            return this.serverService.getDirectories()
-          }
-        })
-      )
-      .subscribe(tree => 
-        this.dataSource.data = convertToTree(tree)
-      );
+      switchMap((prefix) =>
+        iif(()=> prefix === null || prefix === '',
+          this.serverService.getDirectories(),
+          this.serverService.getDirectoriesByPrefix(prefix)
+        )
+      ),
+      takeUntilDestroyed()
+    )
+    .subscribe(tree => this.dataSource.data = tree);
   }
 
-  ngOnInit() {
-    this.serverService.getDirectories()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(tree => {
-      this.dataSource.data = convertToTree(tree)
-    });
+  hasNestedChild(_:number, node:Directory): boolean {
+    return this.isFileNode(node) || node.directories?.length > 0;
   }
 
-  hasNestedChild(_:number, node:DirectoryNode): boolean{
-    return (!!node.files && node.files.length > 0) || (!!node.children && node.children.length > 0);
-  }
-
-  isFileNode(node: DirectoryNode): boolean {
-    return !!node.files && node.files.length > 0;
+  isFileNode(node: Directory): boolean {
+    return node.files?.length > 0;
   }
   
   ngOnDestroy(): void {
