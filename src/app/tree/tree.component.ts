@@ -12,7 +12,7 @@ import { Directory } from '../types';
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.scss'],
 })
-export class TreeComponent {
+export class TreeComponent {  
   dataSource = new MatTreeNestedDataSource<Directory>();
   nestedTree = new NestedTreeControl<Directory>(node => node.directories);
 
@@ -31,7 +31,28 @@ export class TreeComponent {
       ),
       takeUntilDestroyed()
     )
-    .subscribe(tree => this.dataSource.data = tree);
+    .subscribe(tree =>{ 
+      this.dataSource.data = tree;
+      this.expandAllNodesOnSearch();
+    });
+  }
+
+  expandAllNodesOnSearch(){
+    if(this.searchControl.value){
+      this.dataSource.data.forEach((node) => {
+        this.expandNodeRecursive(node);
+      });
+    }
+  }
+
+  private expandNodeRecursive(node: Directory) {
+    this.nestedTree.expand(node);
+
+    if (node.directories) {
+      node.directories.forEach((child) => {
+        this.expandNodeRecursive(child);
+      });
+    }
   }
 
   hasNestedChild(_:number, node:Directory): boolean {
