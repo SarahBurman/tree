@@ -27,6 +27,10 @@ export class TreeComponent implements OnInit, OnDestroy {
     return (!!node.files && node.files.length > 0) || (!!node.children && node.children.length > 0);
   }
 
+  isFileNode(node: DirectoryNode): boolean {
+    return !!node.files && node.files.length > 0;
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

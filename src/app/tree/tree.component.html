@@ -1,6 +1,14 @@
 <mat-tree [dataSource]="dataSource" [treeControl]="nestedTree">
+    <!-- <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+        <div *ngFor="let file of node.files">
+            {{file}}
+        </div>
+    </mat-tree-node> -->
+      <!-- File nodes -->
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-        {{node.name}}
+        <div *ngIf="isFileNode(node)">
+        {{ node }}
+        </div>
     </mat-tree-node>
     <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
         <div class="mat-tree-node">
@@ -12,6 +20,12 @@
             {{node.name}}
         </div>
         <div class="nested-node" [class.tree-invisible]="!nestedTree.isExpanded(node)">
+            <mat-tree-node *ngFor="let file of node.files" [style.padding-left.px]="16">
+                <div>
+                  {{ file }}
+                </div>
+              </mat-tree-node>
+              
             <ng-container matTreeNodeOutlet></ng-container>
         </div>
     </mat-nested-tree-node>
