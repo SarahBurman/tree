@@ -1,7 +1,8 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
 import { ServerService } from '../server.service';
 import { DirectoryNode, convertToTree } from '../utils';
 @Component({
@@ -16,21 +17,48 @@ export class TreeComponent implements OnInit, OnDestroy {
   dataSource = new MatTreeNestedDataSource<DirectoryNode>();
   nestedTree = new NestedTreeControl<DirectoryNode>(node => node.children);
 
+  searchControl = new FormControl<string>('');
+
   constructor(private serverService:ServerService){
+    this.searchControl.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(
+        (prefix) => {
+          if(prefix){
+            return this.serverService.getDirectoriesByPrefix(prefix)
+          }
+          else {
+            return this.serverService.getDirectories()
+          }
+      
+        })
+      )
+      .subscribe(tree => {
+        const convertedTree = convertToTree(tree);
+        console.log(convertedTree);
+        this.dataSource.data = convertedTree;
+      });
   }
 
   ngOnInit() {
-    this.serverService.getData().pipe(takeUntil(this.destroy$)).subscribe(tree => this.dataSource.data = convertToTree(tree));
+    this.serverService.getDirectories()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(tree => {
+      const convertedTree = convertToTree(tree);
+        this.dataSource.data = convertedTree;
+    });
   }
 
-  hasNestedChild(index:number, node:DirectoryNode): boolean{
+  hasNestedChild(_:number, node:DirectoryNode): boolean{
     return (!!node.files && node.files.length > 0) || (!!node.children && node.children.length > 0);
   }
 
   isFileNode(node: DirectoryNode): boolean {
     return !!node.files && node.files.length > 0;
   }
-
+  
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

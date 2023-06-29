@@ -1,6 +1,11 @@
 .tree {
     margin-left: 1em;
 
+    .mat-tree-node {
+        min-height: 2em;
+        margin-top: 0.8em;
+    }
+
     .expand-icon{
         border: none;
         background: none;
