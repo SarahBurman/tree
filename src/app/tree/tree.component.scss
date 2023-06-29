@@ -1,15 +1,24 @@
 
 :host{
-    display: grid;
-    grid-template-rows: auto 1fr;
-    
-    justify-content: center;
-    
     margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-input{
+    display: flex;
+    align-self: center;
+}
+
+.tree-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: ". tree tree tree";
 }
 
 .tree {
-    position: fixed;
+    grid-area: tree;
+    margin-top: 1rem;
 
     .mat-tree-node {
         min-height: 2rem;

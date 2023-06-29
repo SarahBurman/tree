@@ -1,24 +1,22 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { Subject, debounceTime, distinctUntilChanged, iif, startWith, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, iif, startWith, switchMap } from 'rxjs';
 import { ServerService } from '../server.service';
 import { Directory } from '../types';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'tree-tree',
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.scss'],
 })
-export class TreeComponent implements OnDestroy {
+export class TreeComponent {
   dataSource = new MatTreeNestedDataSource<Directory>();
   nestedTree = new NestedTreeControl<Directory>(node => node.directories);
 
   searchControl = new FormControl<string>('');
-
-  private destroy$: Subject<void> = new Subject<void>();
 
   constructor(private serverService:ServerService){
     this.searchControl.valueChanges.pipe(
@@ -42,10 +40,5 @@ export class TreeComponent implements OnDestroy {
 
   isFileNode(node: Directory): boolean {
     return node.files?.length > 0;
-  }
-  
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
