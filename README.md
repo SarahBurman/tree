@@ -31,6 +31,6 @@ an array of directoried, where a directory looks like this in the server:
     files: Array<string>,
     directories: Array<Array<Directory>>
 
-}.```
+}```
 +In the client the structer was flattered a bit.
 +The client application is a single-page application without any router configuration.
