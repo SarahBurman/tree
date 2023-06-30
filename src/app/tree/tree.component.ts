@@ -33,27 +33,17 @@ export class TreeComponent {
     )
     .subscribe(tree =>{ 
       this.dataSource.data = tree;
+      this.nestedTree.dataNodes = tree;
       this.expandAllNodesOnSearch();
     });
   }
 
-  expandAllNodesOnSearch(){
+  expandAllNodesOnSearch(){    
     if(this.searchControl.value){
-      this.dataSource.data.forEach((node) => {
-        this.expandNodeRecursive(node);
-      });
+      this.nestedTree.expandAll();
     }
   }
 
-  private expandNodeRecursive(node: Directory) {
-    this.nestedTree.expand(node);
-
-    if (node.directories) {
-      node.directories.forEach((child) => {
-        this.expandNodeRecursive(child);
-      });
-    }
-  }
 
   hasNestedChild(_:number, node:Directory): boolean {
     return this.isFileNode(node) || node.directories?.length > 0;
