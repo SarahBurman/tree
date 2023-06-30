@@ -14,28 +14,30 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-areas: ". tree tree tree";
-}
 
-.tree {
-    grid-area: tree;
-    margin-top: 1rem;
-
-    .mat-tree-node {
-        min-height: 2rem;
-        margin-top: 0.8rem;
-    }
-
-    .expand-icon{
-        border: none;
-        background: none;
+    .tree {
+        grid-area: tree;
     
-        display: flex;
-        align-items: center;
-    }
+        margin-top: 1rem;
+        margin-bottom: 1rem;
 
-    .nested-node {
-        padding-left: 2rem;
-    }     
+        .mat-tree-node {
+            min-height: 2rem;
+            margin-top: 0.8rem;
+        }
+
+        .expand-icon{
+            border: none;
+            background: none;
+        
+            display: flex;
+            align-items: center;
+        }
+
+        .nested-node {
+            padding-left: 2rem;
+        }     
+    }
 }
 
 .folder-name {
