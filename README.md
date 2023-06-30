@@ -26,11 +26,13 @@ The client-side of the application is implemented using Angular, following indus
 </br>
 +The server utilizes a predefined JSON data structure to represent the file system - the structer was: 
 an array of directoried, where a directory looks like this in the server:
-```interface Directory = {
+```
+interface Directory = {
     name: string,
     files: Array<string>,
     directories: Array<Array<Directory>>
 
-}```
+}
+```
 +In the client the structer was flattered a bit.
 +The client application is a single-page application without any router configuration.
