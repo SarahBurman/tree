@@ -13,7 +13,17 @@
 .tree-container{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: ". tree tree tree";
+    grid-template-areas: 
+    "error error error error"
+    ". tree tree tree";
+
+    .error {
+        grid-area: error;
+        justify-self: center;
+        
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
 
     .tree {
         grid-area: tree;

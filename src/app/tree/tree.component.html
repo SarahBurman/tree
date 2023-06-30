@@ -2,6 +2,9 @@
     <input placeholder="search directory or file" [formControl]="searchControl" >
 </div>
 <div  class="tree-container">
+    <div *ngIf="dataSource.data.length === 0" class="error">
+        No matching files or directories found.
+    </div>
     <mat-tree [dataSource]="dataSource" [treeControl]="nestedTree" class="tree">
         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
             <div class="mat-tree-node">
@@ -19,7 +22,7 @@
                         insert_drive_file
                     </mat-icon>
                     <div class="folder-name">{{ file }}</div>
-                </mat-tree-node>
+                </mat-tree-node>               
             </div>
         </mat-nested-tree-node>
     </mat-tree>
