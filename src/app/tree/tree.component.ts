@@ -44,7 +44,6 @@ export class TreeComponent {
     }
   }
 
-
   hasNestedChild(_:number, node:Directory): boolean {
     return this.isFileNode(node) || node.directories?.length > 0;
   }
